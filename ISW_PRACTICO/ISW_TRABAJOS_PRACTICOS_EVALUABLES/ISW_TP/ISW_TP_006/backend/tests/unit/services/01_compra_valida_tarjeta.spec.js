@@ -9,7 +9,7 @@ const {crearCompraEntradasService} = require('../../../services/comprarEntradasS
 // Al confirmar: se solicita enviar email y el resultado muestra resumen (cantidad y fecha)
 
 const mockDatosEntrada ={UsuarioId:1, fecha:"2024-06-20", cantidad:3, participantes:[{edad:25, tipoEntrada:"vip"},{edad:30, tipoEntrada:"vip"},
-    {edad:5, tipoEntrada:"niño"}], formaPago:"tarjeta", email:"mailUsuario@gmail.com"}
+    {edad:5, tipoEntrada:"niño"}], formaPago:"tarjeta"}
 
 decribe('Servicio comprarEntradas - Caso Feliz', () => {
     test('Reirección a MP y resumen de compra',()=>{
