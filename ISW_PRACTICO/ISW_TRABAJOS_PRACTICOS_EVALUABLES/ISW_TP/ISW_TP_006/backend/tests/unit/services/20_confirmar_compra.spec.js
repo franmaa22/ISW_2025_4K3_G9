@@ -1,0 +1,1 @@
+// Verificar que al confirmar una compra válida se envíe un mail de confirmación al mail del usuario 

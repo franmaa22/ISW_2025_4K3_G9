@@ -8,6 +8,9 @@
 //Forma de pago = tarjeta → se solicita redirección a MP.
 //Al confirmar: se solicita enviar email y el resultado muestra resumen (cantidad y fecha).
 
+// al terminar de hacer los unit test, integramos la función
+
+// los datos de entrada =>fecha, usuario, cantidadEntradas, entradas{edad:, tipoEntrada: , ....} , formaPago
 function comprarEntradas(){
     pass
 }
