@@ -30,6 +30,10 @@ function calcularPrecioEntrada(edad, tipo) {
   return 1000;
 }
 
+function validarFormaDePago(){
+
+}
+
 module.exports = { validarParticipantes, calcularPrecioEntrada };
 
 
