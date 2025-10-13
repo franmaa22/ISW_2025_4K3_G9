@@ -1,6 +1,6 @@
 
 
-const usuariosLogueados = [{id:1, nombre:"Nicolas", email:"nicolas@gmail.com"}. {id:2, nombre:"Mariano", email:"Mariano@gmail.com"}]
+const usuariosLogueados = [{id:1, nombre:"Nicolas", email:"nicolas@gmail.com"}, {id:2, nombre:"Mariano", email:"Mariano@gmail.com"}, {id:3, nombre:"Luca", email:"luca@gmail.com"}]
 
 
 function esUsuarioLogueado(idUsuario){

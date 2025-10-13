@@ -19,4 +19,17 @@ function  confirmarCompra(){
     pass
 }
 
+function validarParticipantes(participantes) {
+  const tiposValidos = ['regular', 'vip'];
+  return participantes.every(p => p.tipoEntrada && tiposValidos.includes(p.tipoEntrada));
+}
+
+function calcularPrecioEntrada(edad, tipo) {
+  if (tipo === 'regular' && edad <= 3) return 0;
+  if (tipo === 'vip') return 2000;
+  return 1000;
+}
+
+module.exports = { validarParticipantes, calcularPrecioEntrada };
+
 
