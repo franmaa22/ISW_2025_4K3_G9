@@ -1,6 +1,5 @@
 class Compra {
-    constructor({id, fecha, hora, formaPago, entradas =[] }){
-        this.id = id;
+    constructor({fecha, hora, formaPago, entradas =[] }){
         this.fecha = fecha;
         this.hora = hora;
         this.formaPago = formaPago;
