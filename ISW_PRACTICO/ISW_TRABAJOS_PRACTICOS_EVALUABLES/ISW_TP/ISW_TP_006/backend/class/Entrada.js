@@ -1,16 +1,16 @@
-import calcularPrecio from "../priceStrategy/pricingPolicy";
-
 class Entrada {
-    constructor({id, edad, tipoEntrada, precioFinal})
+    constructor({edad, tipoEntrada })
     {
-        this.id = id;
         this.edad = edad;
         this.tipoEntrada = tipoEntrada;
-        this.precioFinal = undefinded;
     }
-    calcularPrecioEntrada(calcularPrecio){
-        this.precioFinal = calcularPrecio.precioDe({tipoEntrada: this.tipoEntrada, edad: this.edad});
-        return this.precioFinal
+
+    obtenerPrecioBase(){
+        if (this.tipoEntrada === "vip") return 10000;
+        if (this.tipoEntrada === "estandar") return 5000;
+        throw new Error(`Tipo de entrada desconocido: ${this.tipoEntrada}`)
+    }
+    calcularPrecioEntrada(){
     }
 }
 
