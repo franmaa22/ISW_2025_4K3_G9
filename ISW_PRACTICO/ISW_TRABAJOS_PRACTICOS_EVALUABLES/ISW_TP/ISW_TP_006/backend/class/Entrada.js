@@ -14,6 +14,9 @@ class Entrada {
         if(this.edad >= 4 && this.edad <= 15 && this.tipoEntrada === "vip"){
             return this.obtenerPrecioBase() * 0.50
         }
+        if (this.edad >= 60 && this.tipoEntrada === "estandar"){
+            return this.obtenerPrecioBase() * 0.50
+        }
     }
 }
 
