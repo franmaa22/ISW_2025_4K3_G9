@@ -11,6 +11,9 @@ class Entrada {
         throw new Error(`Tipo de entrada desconocido: ${this.tipoEntrada}`)
     }
     calcularPrecioEntrada(){
+        if(this.edad >= 4 && this.edad <= 15 && this.tipoEntrada === "vip"){
+            return this.obtenerPrecioBase() * 0.50
+        }
     }
 }
 
