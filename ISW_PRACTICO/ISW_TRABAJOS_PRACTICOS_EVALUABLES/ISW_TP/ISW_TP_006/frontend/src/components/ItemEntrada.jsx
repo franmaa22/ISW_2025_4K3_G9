@@ -1,4 +1,5 @@
-export default function ItemEntrada({ index, edad, tipo, onChange }) {
+export default function ItemEntrada({ index, value, onChange, onRequestPrice }) {
+  const {edad ='', tipo = '', precio = null, loading = false}= value ?? {};
   return (
     <div className="bg-white border border-hp-soft rounded-xl p-4 mb-4 shadow-sm w-full">
       <h3 className="text-hp-primary font-semibold mb-3">
@@ -15,6 +16,7 @@ export default function ItemEntrada({ index, edad, tipo, onChange }) {
             max={120}
             value={edad}
             onChange={(e) => onChange(index, { edad: e.target.value })}
+            onBlur={()=> onRequestPrice(index)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
         </div>
@@ -27,6 +29,7 @@ export default function ItemEntrada({ index, edad, tipo, onChange }) {
           <select
             value={tipo}
             onChange={(e) => onChange(index, { tipo: e.target.value })}
+            onBlur={()=> onRequestPrice(index)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
             <option value="">Seleccionar...</option>
@@ -34,6 +37,15 @@ export default function ItemEntrada({ index, edad, tipo, onChange }) {
             <option value="vip">VIP</option>
           </select>
         </div>
+      </div>
+      <div className="mt-3 text-sm">
+        {loading ? (
+          <span className="text-hp-primary">Calculando...</span>
+        ) : precio != null ? (
+          <span className="text-hp-dark">Precio: <strong>${precio}</strong></span>
+        ) : (
+          <span className="text-hp-soft">Completá edad y tipo para calcular</span>
+        )}
       </div>
     </div>
   );
