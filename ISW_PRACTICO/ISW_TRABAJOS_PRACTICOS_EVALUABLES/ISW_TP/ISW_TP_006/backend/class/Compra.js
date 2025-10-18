@@ -1,6 +1,5 @@
 class Compra {
-    constructor({id, fecha, hora, formaPago, entradas =[] }){
-        this.id = id;
+    constructor({fecha, hora, formaPago, entradas =[] }){
         this.fecha = fecha;
         this.hora = hora;
         this.formaPago = formaPago;
@@ -11,7 +10,24 @@ class Compra {
     confirmarCompra(){}
     validarCantidadEntradas(){}
     calcularPrecioCompra(){}
-    generarResumen(){}
+    generarResumen(){
+        const tickets = this.entradas.map((entrada,i)=> ({
+            numeroTicket: i + 1,
+            tipo: entrada.tipoEntrada,
+            edad: entrada.edad,
+            precio: entrada.calcularPrecioEntrada()
+        }));
+
+        const resumen = {
+            fecha: this.fecha,
+            hora: this.hora,
+            formaPago: this.formaPago,
+            cantidadEntradas: this.entradas.length,
+            tickets,
+        }
+        return resumen;
+
+    }
     resumen({QR}= {}){}
 }
 
