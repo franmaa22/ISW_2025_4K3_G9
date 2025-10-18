@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import ItemEntrada from './ItemEntrada';
 import { calcularPrecioEntrada } from '../../api';
 
@@ -30,6 +30,24 @@ export default function ComprarEntradas() {
       return next;
     });
   };
+
+  const prevKeysRef = useRef([]);
+
+  useEffect(() => {
+    items.forEach((it, i) => {
+      const prev = prevKeysRef.current[i];
+      const changed =
+        !prev ||
+        prev.edad !== it.edad ||
+        prev.tipo !== it.tipo;
+
+      if (changed && it && it.edad !== '' && it.tipo !== '' && !it.loading) {
+        requestPrice(i);
+      }
+    });
+
+    prevKeysRef.current = items.map(it => ({ edad: it.edad, tipo: it.tipo }));
+  }, [items]);
 
   const requestPrice = async (index) => {
     const it = items[index];
