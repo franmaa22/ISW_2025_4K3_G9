@@ -1,11 +1,9 @@
-const Usuario = require("../../../class/Usuario");
-const { usuarioLogueadoMock } = require("../../../mocks/usersLogueados");
+import Usuario from "../../../class/Usuario.js";
+import { usuarioLogueadoMock } from "../../../mocks/usersLogueados.js";
 
 describe("Usuario - Verificar si el usuario está logueado", () => {
   test("Debería retornar true si el usuario está logueado", () => {
-    // Arrange & Act
     const usuario = new Usuario(usuarioLogueadoMock());
-    // Assert
     expect(usuario.usuarioLogueado()).toBe(true);
   });
 });

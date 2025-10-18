@@ -12,70 +12,16 @@ Salida:
 Al confirmar la compra se informa la cantidad de entradas compradas y la fecha.
 
 
-REUNION 10/10
+test propuestos:
 
-Vamos a usar POO para hacer clases que cubran el dominio total, las clases van a ser:
-Clase
-Usuarios(nombreUsuario, mail, logueado)
-Compra(entradas[]:Entrada, resumen, nro compra, usuario:Usuario, formaDePago:FormaDePago,estado:bool) =>Calcularpreciocompra, 
-Entrada(nro, tipo, edad, …) =>calcular_precio_entrada
-	Regular (super:Entrada, descripcion, precioBase)
-	VIP (super:Entrada, descripcion, precioBase, )
-
-
-
-Compra:
-    entradas[]:Entradas
-    resumenCompra:Resumen?
-    nroCompra
-    usuario:Usuario
-    formaDePago:FormaDePago
-    estado:Estado
-metodos:
-    calcularPrecioCompra(), validarFormaPago(), validarEstadoCompra(), confimarCompra(), validarCantidadEntradas(), validarConjuntoEntradaValido(), validarCOnjuntoEntradaEdades() ....
-
-Entrada(ABC):
-    nroOrden
-    edad
-de entrada:
-metodos: calcularPrecioEntrada(), validarEd
-    EntradaVip:
-        tipo
-        precioBase
-        metodo: calcularPrecioEntrada()
-
-    EntradaRegular:
-         tipo
-        precioBase
-        metodo: calcularPrecioEntrada()
+compra_valida_tarjeta
+compra_valida_efectivo
+compra_invalida_supera_10
+compra_invalida_user_no_logueado
+compra_invalida_fecha_pasada
+compra_invalida_dia_cerrado
+compra_invalida_falta_edad_participante
+compra_invalida_falta_tipo_entrada_participante
+compra_muestra_resumen_cantidad_fecha
 
 
-TODO ESO A REFINAR PERO ES LA BASE
- --------------------------------------------------------------------------------------------------------------------------------------------------------------
-TEST PLANTEADOS BASADOS EN EL CASO FELIZ:
-
-compravalidacontarjeta(usuario=logueado, feche >= hoy, parque = abierto, cantidad<=10, {entradas[] = valida}, formaPago = tarjeta,){
-1test_usuario_logiueado_pasa(usuario);
-2test_fecha_valida(fecha) hoy hacia adelante 
-3test_parque_abierto(fecha)  que no sea lunes ni 25 de dici ni 1 de enero
-4testCantidadEntradas() menor o igual a 10
-5testConjuntoEntradasCantidadValido(cantidadEntradas, conjuntoEntradas[]) valida que haya la misma cantidad de entradas en el array que las pedidas en la compra 
-6testConjuntoCantidadEntradasTienenEdades()
-7testConjuntoCantidadEntradasTienenTipoEntrada()
-8testValorEntrada(edad,tipo)
-9testDe0a3Regular(edad,tipo)
-10testDe0a3Vip(edad,tipo)
-11testDe4a15Regular(edad,tipo)
-12testDe4a15Vip(edad,tipo)
-13testDe60Regular(edad,tipo) return valor;
-14testDe60Vip(edad,tipo)
-15testHorarioValido()
-16testCuposHorario(cantidadEntradas, horario)
-17testFormaDePagoValida()
-18testRedireccionMercadoPago()
-19testEnvioDeMail()
-
-
-PUEDEN LLEGAR A AGREGARSE TEST DE CUPOS CUANDO RESPONDA LA PROFE
-	
-}
