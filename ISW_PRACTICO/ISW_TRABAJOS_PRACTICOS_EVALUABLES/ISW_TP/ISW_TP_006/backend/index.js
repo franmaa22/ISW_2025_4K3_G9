@@ -1,24 +1,24 @@
 import express from 'express'   // Si usas ES Modules
-import GestorCompra from './services/gestorCompra'
+import GestorCompra from './services/gestorCompra.js'
 
 
 const app = express()
-const PORT = 3000
+const PORT = 8888
 
 app.use(express.json())
 
 const gestor = new GestorCompra();
 
-app.post('/comprarEntrada', (req, res) => {
+app.post('/comprarEntradas', (req, res) => {
   try {
     const {fecha, hora, formaPago, entradas} = req.body;
-    const respuesta = gestor.realizarCompra({
+    const resumen = gestor.realizarCompra({
       fecha, hora, formaPago,
       entradasData: entradas
     })
     res.status(201).json({
       message: "Compra realizada con exito",
-      ...respuesta
+      ...resumen
     });
   }catch(error) {
     res.status(400).json({

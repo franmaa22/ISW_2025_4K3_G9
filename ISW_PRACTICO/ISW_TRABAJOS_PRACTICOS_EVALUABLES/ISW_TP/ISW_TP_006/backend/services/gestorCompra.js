@@ -1,21 +1,20 @@
-import Compra from "../class/Compra";
-import Entrada from "../class/Entrada"
+import Compra from "../class/Compra.js";
+import Entrada from "../class/Entrada.js"
 
 class GestorCompra{
 
     realizarCompra({fecha, hora, formaPago, entradasData}) {
         const entradas = entradasData.map(
-            (e) => new Entrada({edad: e.edad, tipo: e.tipo})
+            (e) => new Entrada({edad: e.edad, tipoEntrada: e.tipoEntrada})
         );
 
         const compra = new Compra({
             fecha, hora, formaPago, entradas,
         })
 
-        // Ver que devolver cuando la compra se realiza con exito
-        // tendria que ser un json para verlo en react
+        const resumen = compra.generarResumen()
         
-        console.log(compra.fecha)
+        return resumen
 
     }
 }
