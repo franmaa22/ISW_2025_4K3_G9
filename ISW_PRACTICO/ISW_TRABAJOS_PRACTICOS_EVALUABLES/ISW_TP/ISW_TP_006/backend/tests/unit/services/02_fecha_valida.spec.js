@@ -1,4 +1,4 @@
-const Compra = require("../../class/Compra");
+const Compra = require("../../../class/Compra");
 const compraMock = require("../mocks/compraMock");
 
 describe("Verificar si la fecha seleccionada es posterior o igual a la fecha actual", () => {
