@@ -7,6 +7,7 @@ export default function ComprarEntradas() {
   const [items, setItems] = useState([
     { edad: '', tipo: '', precio: null, loading: false },
   ]);
+  const [fecha, setFecha] = useState([])
 
   const handleCantidad = (n) => {
     const q = Math.max(1, Math.min(10, Number(n) || 1));
@@ -91,11 +92,23 @@ export default function ComprarEntradas() {
     [items]
   );
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-hp-light px-4 py-10">
       <h1 className="text-4xl font-bold text-hp-primary mb-6 text-center">Eco Harmony Park 🌿</h1>
 
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl border border-hp-soft">
+        <div className="mb-4">
+          <label className="block text-hp-dark font-semibold mb-2">Fecha de visita</label>
+          <input
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            min={today}
+            className="w-full border border-hp-mint rounded-xl px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-hp-primary"
+          />
+        </div>
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">Cantidad de entradas</label>
           <input
