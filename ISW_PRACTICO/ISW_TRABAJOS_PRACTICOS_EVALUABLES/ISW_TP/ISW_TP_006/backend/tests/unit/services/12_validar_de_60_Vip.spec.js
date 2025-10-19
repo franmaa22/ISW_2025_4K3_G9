@@ -1,4 +1,4 @@
-const { crearCompraEntradasService } = require('../../../services/comprarEntradasService');
+import { crearCompraEntradasService } from '../../../services/comprarEntradasService';
 
 describe('Servicio comprarEntradas - Descuento 50% mayores 60 años VIP', () => {
     test('Debe aplicar 50% de descuento para edad >= 60 con entrada VIP', () => {

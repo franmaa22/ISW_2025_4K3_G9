@@ -1,4 +1,4 @@
-const { crearCompraEntradasService } = require('../../../services/comprarEntradasService');
+import { crearCompraEntradasService } from '../../../services/comprarEntradasService';
 
 describe('Servicio comprarEntradas - Precio 100% para edad 16-59 con entrada regular', () => {
     test('Debe aplicar precio completo (100%) para edad entre 16 y 59 con entrada regular', () => {
