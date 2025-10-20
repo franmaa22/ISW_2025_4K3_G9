@@ -34,6 +34,6 @@ function validarFormaDePago(){
 
 }
 
-module.exports = { validarParticipantes, calcularPrecioEntrada };
+module.exports = { validarParticipantes, calcularPrecioEntrada, validarFormaDePago };
 
 
