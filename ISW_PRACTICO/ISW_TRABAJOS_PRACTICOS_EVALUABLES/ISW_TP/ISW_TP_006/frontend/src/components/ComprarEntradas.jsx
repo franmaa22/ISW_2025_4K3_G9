@@ -3,9 +3,6 @@ import ItemEntrada from './ItemEntrada';
 import { calcularPrecioEntrada, comprarEntrada } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
 import CompraExitosaModal from './CompraConfirmada';
-import { calcularPrecioEntrada, comprarEntrada } from '../../api';
-import MercadoPagoMockModal from './MercadoPago';
-import CompraExitosaModal from './CompraConfirmada';
 
 export default function ComprarEntradas() {
   const [cantidad, setCantidad] = useState(1);
@@ -24,36 +21,8 @@ export default function ComprarEntradas() {
   const [dataSuccess, setDataSuccess] = useState(false)
   const [finalizar, setFinalizar] = useState(false)
 
-
-  const ahora= new Date()
-  const año = ahora.getFullYear();
-  const mes = String(ahora.getMonth() + 1).padStart(2, '0'); // Mes es 0-11
-  const dia = String(ahora.getDate()).padStart(2, '0');
-  const fechaHoyFormateada= `${año}-${mes}-${dia}`;
-  const hora  = String(ahora.getHours()).padStart(2, '0');
-  const minutos = String(ahora.getMinutes()).padStart(2, '0');
-  const segundos = String(ahora.getSeconds()).padStart(2, '0');
-  const horaFormateada = `${hora}_${minutos}_${segundos}`;
-  const fechasBloqueadas = ['']
-  
  
-  const pagar = ()=>{
-    if(formaDePago == "tarjeta"){
-      setOpen(true)
-      return
-    }
-    setFinalizar(true) 
-  }
-  const [entradasData, setEntradasData] = useState([]);
-  const [formaDePago, setFormaDePago] = useState('');
-  const [fechaSeleccionada, setFechaSeleccionada] = useState('');
-  const [resumen, setResumen] = useState({});
-  const [open, setOpen] = useState(false)
-  const [dataSeteada, setDataSeteada] = useState(false);
-  const [bloqueo, setBloqueo] = useState(false)
-  const [pagoProcesado, setPagoProcesado] = useState(false)
-  const [dataSuccess, setDataSuccess] = useState(false)
-  const [finalizar, setFinalizar] = useState(false)
+
 
   // Agrego
   const [fecha, setFecha] = useState('');
@@ -168,32 +137,6 @@ export default function ComprarEntradas() {
     });
   };
 
-  const prevKeysRef = useRef([]);
-
-  //este para simular la compra y ver si sale bien el resumen => lo nutrimos despues con la funcionaldiad real
-
-
-
-  const handleEnvio = async (formaPago, entradas, total, fechaVisita, fechaHoy, horaHoy)=>{
-    console.log("Enviando: ", entradas)
-    const data = {fechaData: fechaHoy, horaData: horaHoy, formaData: formaPago, entradasData:entradas}
-//fecha, hora, formaPago, entradasData
-      try{
-         const response = await  comprarEntrada({fecha: data.fechaData, hora:data.horaData, formaPago: data.formaData, entradasData: data.entradasData})
-         
-         if (response){
-           console.log("Compra válida, proceda al pago")
-           setResumen(response)
-           setBloqueo(true)
-           setDataSuccess(true)
-           console.log(response)
-         }
-      }
-     catch(error){
-       console.error(error.message)
-     }
-
-    }
 
 
 
@@ -330,14 +273,7 @@ export default function ComprarEntradas() {
       <h1 className="text-4xl font-bold text-hp-primary mb-6 text-center">Eco Harmony Park 🌿</h1>
 
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl border border-hp-soft">
-        <div>
-          <label htmlFor="">Seleccione la fecha de visita al parque</label>
-          <input className="block text-hp-dark font-medium mb-1" disabled={bloqueo} min={fechaHoyFormateada}  type="date"  onChange={(e)=> setFechaSeleccionada(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="">Seleccione la fecha de visita al parque</label>
-          <input className="block text-hp-dark font-medium mb-1" disabled={bloqueo} min={fechaHoyFormateada}  type="date"  onChange={(e)=> setFechaSeleccionada(e.target.value)} />
-        </div>
+
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">Cantidad de entradas</label>
           <input
@@ -393,14 +329,12 @@ export default function ComprarEntradas() {
               index={i}
               value={it}
               disabled={bloqueo}
-              disabled={bloqueo}
               onChange={handleItemChange}
               onRequestPrice={requestPrice}
             />
           ))
           }
-          ))
-          }
+        
         </div>
     
         <div className="flex-1">
@@ -432,34 +366,8 @@ export default function ComprarEntradas() {
         <div className="p-6"></div>
     </div>
     
-        <div className="flex-1">
-          <label className="block text-hp-dark font-medium mb-1">
-            Seleccione la forma de pago
-          </label>
-          <select
-            value={formaDePago}
-            disabled={bloqueo}
-            onChange={(e) =>  setFormaDePago(e.target.value)}
-            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
-          >
-            <option value="">Seleccionar...</option>
-            <option value="efectivo">Efectivo</option>
-            <option value="tarjeta">Tarjeta</option>
-          </select>
-        </div>
-        <div className="p-6">
-      <div className="flex-1">
-          <button
-            title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
-            disabled={(dataSeteada != true) && (!bloqueo)}
-            onClick={()=>handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
-            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
-          >
-            Confirmar Datos de Compra
-          </button>
-        </div>
-        <div className="p-6"></div>
-    </div>
+ 
+
         <div className="flex items-center justify-between mt-4 border-t pt-4">
           <span className="text-hp-dark font-semibold">Total:</span>
           <span className="text-2xl font-bold text-hp-primary">${total}</span>
