@@ -2,12 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "jest"
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "dev": "nodemon index.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +23,7 @@
     "test": "tests"
   },
   "jest": {
-    "testMatch": ["**/tests/unit/services/**/*.test.js"]
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.(test|spec).{js,cjs,mjs}"]
   }
 }

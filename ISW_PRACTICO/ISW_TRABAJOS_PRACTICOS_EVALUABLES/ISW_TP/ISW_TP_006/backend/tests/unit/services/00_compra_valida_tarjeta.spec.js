@@ -1,4 +1,5 @@
-const {crearCompraEntradasService} = require('../../../services/comprarEntradasService');
+import { crearCompraEntradasService } from '../../../services/comprarEntradasService.js';
+
 
 // Test para el caso feliz de comprar entradas con tarjeta
 // Usuario logueado

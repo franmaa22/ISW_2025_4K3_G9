@@ -12,11 +12,11 @@
 
 // los datos de entrada =>fecha, usuario, cantidadEntradas, entradas{edad:, tipoEntrada: , ....} , formaPago
 function comprarEntradas(){
-    pass
+
 }
 
 function  confirmarCompra(){
-    pass
+
 }
 
 export  function validarParticipantes(participantes) {
@@ -35,4 +35,20 @@ function validarFormaDePago(){
 }
 
 
+export function cantidadEntradasValida(cantidad) {
+  const n = Number(cantidad);
+  return Number.isInteger(n) && n >= 1 && n <= 10;
+}
+
+export function conjuntoEntradasCantidadValido(cantidadEntradas, conjuntoEntradas) {
+  if (!Array.isArray(conjuntoEntradas)) return false;
+  const n = Number(cantidadEntradas);
+  if (!Number.isInteger(n)) return false;
+  return conjuntoEntradas.length === n;
+}
+
+export function conjuntoCantidadEntradasTienenEdades(conjuntoEntradas) {
+  if (!Array.isArray(conjuntoEntradas)) return false;
+  return conjuntoEntradas.every(e => Number.isInteger(e?.edad) && e.edad >= 0 && e.edad <= 120);
+}
 

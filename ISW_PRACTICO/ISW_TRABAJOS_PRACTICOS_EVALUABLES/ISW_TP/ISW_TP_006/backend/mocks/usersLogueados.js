@@ -1,4 +1,5 @@
-const usuariosLogueados = [
+// ESM: export por nombre
+export const usuariosLogueados = [
   "mariano",
   "nicolas",
   "francisco",
@@ -9,14 +10,12 @@ const usuariosLogueados = [
   "Juan"
 ];
 
-module.exports = {
-  usuariosLogueados,
-  usuarioLogueadoMock: () => ({
+export function usuarioLogueadoMock() {
+  return {
     identificacion: 1,
     correo_electronico: "micaela@mail.com",
     nombre: "Micaela",
     apellido: "Arrigoni",
     logueado: true,
-  }),
-};
-
+  };
+}
