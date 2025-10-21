@@ -6,7 +6,9 @@ class Compra {
     this.entradas = entradas;
   }
   // cantidad de entradas?? Es calculable pero nos puede servir para el test
-  validarFormaDePago() {}
+  validarFormaDePago() {
+    return ['tarjeta', 'efectivo'].includes(this.formaPago);
+  }
   confirmarCompra() {}
   validarCantidadEntradas() {}
   calcularPrecioCompra() {}

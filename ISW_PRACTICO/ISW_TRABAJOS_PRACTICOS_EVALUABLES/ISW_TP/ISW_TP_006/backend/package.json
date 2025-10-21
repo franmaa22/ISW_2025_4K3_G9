@@ -1,16 +1,16 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0"
@@ -18,5 +18,12 @@
   "devDependencies": {
     "jest": "^30.2.0",
     "nodemon": "^3.1.10"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.(test|spec).{js,cjs,mjs}"]
   }
 }

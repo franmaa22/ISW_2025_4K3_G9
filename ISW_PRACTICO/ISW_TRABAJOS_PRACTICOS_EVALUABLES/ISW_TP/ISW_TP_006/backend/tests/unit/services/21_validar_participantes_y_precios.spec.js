@@ -1,5 +1,4 @@
-const { calcularPrecioEntrada, validarParticipantes } = require('../../../services/comprarEntradasService');
-
+import {validarParticipantes, calcularPrecioEntrada} from '../../../services/comprarEntradasService';
 describe('Validaciones de compra de entradas', () => {
 
   //testConjuntoCantidadEntradasTienenTipoEntrada

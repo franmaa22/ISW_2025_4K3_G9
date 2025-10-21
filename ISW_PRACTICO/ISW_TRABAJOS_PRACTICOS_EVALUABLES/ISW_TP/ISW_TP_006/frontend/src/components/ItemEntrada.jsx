@@ -1,6 +1,5 @@
-export default function ItemEntrada({ index, value, onChange, onRequestPrice, disabled = false }) {
-  const { edad = '', tipo = '', precio = null, loading = false } = value ?? {};
-  
+export default function ItemEntrada({ index, value, onChange, disabled}) {
+  const {edad ='', tipo = '', precio = null, loading = false}= value ?? {};
   return (
     <div 
       className={`bg-white border border-hp-soft rounded-xl p-4 mb-4 shadow-sm w-full transition-opacity ${
@@ -19,11 +18,10 @@ export default function ItemEntrada({ index, value, onChange, onRequestPrice, di
             type="number"
             min={0}
             max={120}
+            disabled={disabled}
             value={edad}
             onChange={(e) => onChange(index, { edad: e.target.value })}
-            onBlur={() => onRequestPrice(index)}
-            disabled={disabled}
-            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
         </div>
 
@@ -34,10 +32,9 @@ export default function ItemEntrada({ index, value, onChange, onRequestPrice, di
           </label>
           <select
             value={tipo}
-            onChange={(e) => onChange(index, { tipo: e.target.value })}
-            onBlur={() => onRequestPrice(index)}
             disabled={disabled}
-            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+            onChange={(e) => onChange(index, { tipo: e.target.value })}
+            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
             <option value="">Seleccionar...</option>
             <option value="estandar">Estándar</option>

@@ -1,7 +1,21 @@
-export const usuarioLogueadoMock = () => ({
-  id: 1,
-  email: "micaela@mail.com",
-  nombre: "Micaela",
-  apellido: "Arrigoni",
-  logueado: true,
-});
+// ESM: export por nombre
+export const usuariosLogueados = [
+  "mariano",
+  "nicolas",
+  "francisco",
+  "mateo",
+  "paz",
+  "Lucas",
+  "Micaela",
+  "Juan"
+];
+
+export function usuarioLogueadoMock() {
+  return {
+    identificacion: 1,
+    correo_electronico: "micaela@mail.com",
+    nombre: "Micaela",
+    apellido: "Arrigoni",
+    logueado: true,
+  };
+}
