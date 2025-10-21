@@ -1,6 +1,6 @@
 import { use, useEffect, useMemo, useRef, useState } from 'react';
 import ItemEntrada from './ItemEntrada';
-import { calcularPrecioEntrada, comprarEntrada } from '../../api';
+import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
 import CompraExitosaModal from './CompraConfirmada';
 

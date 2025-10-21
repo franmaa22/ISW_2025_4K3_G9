@@ -20,3 +20,11 @@ export function comprarEntrada ({fecha, hora, formaPago, entradasData}){
 }
 
 // NO LA ESTOY USANDO PREALMENTE LO SIMULO PARA PPROBAR EL ENVÍO.
+
+// Usar la misma función request para consistencia
+export function validarFechaDisponible(fecha) {
+  return request('/api/parque/validar-fecha', {
+    method: 'POST', 
+    body: { fecha }
+  });
+}
