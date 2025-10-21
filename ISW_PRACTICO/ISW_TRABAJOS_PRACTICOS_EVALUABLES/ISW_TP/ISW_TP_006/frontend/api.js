@@ -16,7 +16,7 @@ export function calcularPrecioEntrada({tipoEntrada, edad}){
 }
 
 export function comprarEntrada ({fecha, hora, formaPago, entradasData}){
-    return request('/ComprarEntrada', {method:'POST', body:{fecha, hora, formaPago, entradasData}})
+    return request('/comprarEntradas', {method:'POST', body:{fecha, hora, formaPago, entradasData}})
 }
 
 // NO LA ESTOY USANDO PREALMENTE LO SIMULO PARA PPROBAR EL ENVÍO.

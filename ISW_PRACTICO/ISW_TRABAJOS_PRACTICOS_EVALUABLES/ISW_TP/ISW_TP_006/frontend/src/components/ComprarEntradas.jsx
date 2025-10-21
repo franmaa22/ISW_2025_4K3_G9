@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
 import ItemEntrada from './ItemEntrada';
-import { calcularPrecioEntrada } from '../../api';
+import { calcularPrecioEntrada, comprarEntrada } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
 export default function ComprarEntradas() {
   const [cantidad, setCantidad] = useState(1);
@@ -10,7 +10,23 @@ export default function ComprarEntradas() {
 
   const [entradasData, setEntradasData] = useState([]);
   const [formaDePago, setFormaDePago] = useState('');
+  const [fechaSeleccionada, setFechaSeleccionada] = useState('');
+  const [resumen, setResumen] = useState({});
   const [open, setOpen] = useState(false)
+  const [dataSeteada, setDataSeteada] = useState(false);
+  
+  const ahora= new Date()
+  const año = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0'); // Mes es 0-11
+  const dia = String(ahora.getDate()).padStart(2, '0');
+  const fechaHoyFormateada= `${año}-${mes}-${dia}`;
+  const hora  = String(ahora.getHours()).padStart(2, '0');
+  const minutos = String(ahora.getMinutes()).padStart(2, '0');
+  const segundos = String(ahora.getSeconds()).padStart(2, '0');
+  const horaFormateada = `${hora}_${minutos}_${segundos}`;
+  const fechasBloqueadas = ['']
+  
+ 
   const pagar = ()=>{
     setOpen(true)
   }
@@ -33,7 +49,9 @@ export default function ComprarEntradas() {
         ...patch,
         precio: ('edad' in patch || 'tipo' in patch) ? null : next[index].precio,
       };
+      setEntradasData(items)
       return next;
+
     });
   };
 
@@ -43,29 +61,22 @@ export default function ComprarEntradas() {
 
 
 
-  const handleEnvio = async (formaPago, entradasData, total)=>{
+  const handleEnvio = async (formaPago, entradasData, total, fechaVisita, fechaHoyFormateada, horaFormateada)=>{
     
-    const ahora= new Date()
-    const año    = ahora.getFullYear();
-    const mes    = String(ahora.getMonth() + 1).padStart(2, '0'); // Mes es 0-11
-    const dia    = String(ahora.getDate()).padStart(2, '0');
-    const fecha  = `${año}-${mes}-${dia}`;
-
-    const hora     = String(ahora.getHours()).padStart(2, '0');
-    const minutos  = String(ahora.getMinutes()).padStart(2, '0');
-    const segundos = String(ahora.getSeconds()).padStart(2, '0');
-    const horaFormateada = `${hora}_${minutos}_${segundos}`;
-  
-    const cantidadEntradas = entradasData.length()
-
-    try{
+    const data = {fechaData: fechaHoyFormateada, horaData: horaFormateada, formaData: formaDePago, entradasData:entradasData}
+//fecha, hora, formaPago, entradasData
+      try{
+         const response = await  comprarEntrada({fecha: data.fechaData, hora:data.horaData, formaPago: data.formaData, entradasData: data.entradasData})
+         if (response){
+           console.log("Compra válida, proceda al pago")
+           setResumen(response.resumen)
+         }
+      }
+     catch(error){
+       console.error(error.message)
+     }
 
     }
-    catch(error){
-      console.error(error.message)
-    }
-
-  }
 
   const redireccionMercadoPago = ()=>{
    
@@ -88,6 +99,15 @@ export default function ComprarEntradas() {
     prevKeysRef.current = items.map(it => ({ edad: it.edad, tipo: it.tipo }));
   }, [items]);
 
+  useEffect(()=>{
+    const validador = ()=>{
+      if (entradasData != [] && fechaSeleccionada != '' && formaDePago != ''){
+        setDataSeteada(true)
+        console.log(entradasData, fechaSeleccionada, formaDePago)
+      }
+    }
+    validador();
+  }, [entradasData, fechaSeleccionada, formaDePago])
  
   const requestPrice = async (index) => {
     const it = items[index];
@@ -136,6 +156,10 @@ export default function ComprarEntradas() {
       <h1 className="text-4xl font-bold text-hp-primary mb-6 text-center">Eco Harmony Park 🌿</h1>
 
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl border border-hp-soft">
+        <div>
+          <label htmlFor="">Seleccione la fecha de visita al parque</label>
+          <input className="block text-hp-dark font-medium mb-1" min={fechaHoyFormateada}  type="date"  onChange={(e)=> setFechaSeleccionada(e.target.value)} />
+        </div>
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">Cantidad de entradas</label>
           <input
@@ -157,7 +181,8 @@ export default function ComprarEntradas() {
               onChange={handleItemChange}
               onRequestPrice={requestPrice}
             />
-          ))}
+          ))
+          }
         </div>
         <div className="flex-1">
           <label className="block text-hp-dark font-medium mb-1">
@@ -174,12 +199,28 @@ export default function ComprarEntradas() {
           </select>
         </div>
         <div className="p-6">
-      {(formaDePago == "tarjeta") && 
+      <div className="flex-1">
+          <button
+            title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
+            disabled={(dataSeteada != true)}
+            onClick={handleEnvio}
+            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
+          >
+            Confirmar Datos de Compra
+          </button>
+        </div>
+        <div className="p-6"></div>
+    </div>
+        <div className="flex items-center justify-between mt-4 border-t pt-4">
+          <span className="text-hp-dark font-semibold">Total:</span>
+          <span className="text-2xl font-bold text-hp-primary">${total}</span>
+        </div>
+      {(formaDePago == "tarjeta") && (dataSeteada) && 
       <button
         onClick={pagar}
         className="bg-hp-primary text-hp-light px-4 py-2 rounded-xl"
       >
-        Pagar
+        Procesar Pago con Mercado Pago
       </button>  }
       
 
@@ -191,12 +232,8 @@ export default function ComprarEntradas() {
           console.log('Pago OK');
         }}
       />
-    </div>
-        <div className="flex items-center justify-between mt-4 border-t pt-4">
-          <span className="text-hp-dark font-semibold">Total:</span>
-          <span className="text-2xl font-bold text-hp-primary">${total}</span>
-        </div>
       </div>
+      
     </div>
   );
 }

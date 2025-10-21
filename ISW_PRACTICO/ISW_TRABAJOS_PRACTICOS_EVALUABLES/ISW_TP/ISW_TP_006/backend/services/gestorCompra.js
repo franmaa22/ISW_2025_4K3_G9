@@ -12,6 +12,7 @@ class GestorCompra{
     }
 
     realizarCompra({fecha, hora, formaPago, entradasData}) {
+        
         const entradas = entradasData.map(
             (e) => new Entrada({edad: e.edad, tipoEntrada: e.tipoEntrada})
         );

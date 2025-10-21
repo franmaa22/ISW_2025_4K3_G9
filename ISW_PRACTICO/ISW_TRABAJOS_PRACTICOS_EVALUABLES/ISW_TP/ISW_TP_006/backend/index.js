@@ -20,7 +20,7 @@ app.post('/comprarEntradas', (req, res) => {
     const {fecha, hora, formaPago, entradas} = req.body;
     const resumen = gestor.realizarCompra({
       fecha, hora, formaPago,
-      entradasData: entradas
+      entradas
     })
     res.status(201).json({
       message: "Compra realizada con exito",
