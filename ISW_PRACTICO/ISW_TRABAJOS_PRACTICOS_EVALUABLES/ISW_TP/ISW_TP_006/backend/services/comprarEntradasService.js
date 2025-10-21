@@ -18,6 +18,21 @@ function comprarEntradas(){
 function  confirmarCompra(){
 
 }
+export function crearCompraEntradasService(datos) {
+  // el test te pasa: { fecha, cantidad, participantes: [...], formaPago }
+  const cantidad =
+    Number.isInteger(datos?.cantidad)
+      ? datos.cantidad
+      : Array.isArray(datos?.participantes) ? datos.participantes.length : 0;
+
+  const fecha = datos?.fecha ?? null;
+  const redireccionMP = String(datos?.formaPago ?? '').toLowerCase() === 'tarjeta';
+
+  return {
+    redireccionMP,
+    resumen: { cantidad, fecha }
+  };
+}
 
 export  function validarParticipantes(participantes) {
   const tiposValidos = ['regular', 'vip'];
