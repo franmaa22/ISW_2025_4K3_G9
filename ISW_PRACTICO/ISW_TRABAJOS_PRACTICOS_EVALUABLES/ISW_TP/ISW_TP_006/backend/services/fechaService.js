@@ -1,5 +1,7 @@
 // valida si es una fecha posterior a la de hoy
 //con este parametro "2025-10-14"
+
+
 function fechaValida(fecha) {
 
   const hoy = new Date();
