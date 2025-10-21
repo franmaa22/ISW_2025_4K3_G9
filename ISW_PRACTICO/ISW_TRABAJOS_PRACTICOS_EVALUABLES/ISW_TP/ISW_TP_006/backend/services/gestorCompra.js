@@ -12,9 +12,9 @@ class GestorCompra{
     }
 
     realizarCompra({fecha, hora, formaPago, entradasData}) {
-        
+        console.log(entradasData)
         const entradas = entradasData.map(
-            (e) => new Entrada({edad: e.edad, tipoEntrada: e.tipoEntrada})
+            (e) => new Entrada({edad: e.edad, tipoEntrada: e.tipo})
         );
 
         const compra = new Compra({

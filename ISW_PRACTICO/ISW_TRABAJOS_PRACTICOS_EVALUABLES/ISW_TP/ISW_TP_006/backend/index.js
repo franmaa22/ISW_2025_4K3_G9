@@ -17,10 +17,11 @@ const gestor = new GestorCompra();
 
 app.post('/comprarEntradas', (req, res) => {
   try {
-    const {fecha, hora, formaPago, entradas} = req.body;
+    const {fecha, hora, formaPago, entradasData} = req.body;
+    
     const resumen = gestor.realizarCompra({
       fecha, hora, formaPago,
-      entradas
+      entradasData
     })
     res.status(201).json({
       message: "Compra realizada con exito",

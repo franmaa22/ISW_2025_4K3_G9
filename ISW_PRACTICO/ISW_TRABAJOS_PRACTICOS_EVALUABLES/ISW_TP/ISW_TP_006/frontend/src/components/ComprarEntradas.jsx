@@ -49,7 +49,7 @@ export default function ComprarEntradas() {
         ...patch,
         precio: ('edad' in patch || 'tipo' in patch) ? null : next[index].precio,
       };
-      setEntradasData(items)
+      
       return next;
 
     });
@@ -61,15 +61,17 @@ export default function ComprarEntradas() {
 
 
 
-  const handleEnvio = async (formaPago, entradasData, total, fechaVisita, fechaHoyFormateada, horaFormateada)=>{
-    
-    const data = {fechaData: fechaHoyFormateada, horaData: horaFormateada, formaData: formaDePago, entradasData:entradasData}
+  const handleEnvio = async (formaPago, entradas, total, fechaVisita, fechaHoy, horaHoy)=>{
+    console.log("Enviando: ", entradas)
+    const data = {fechaData: fechaHoy, horaData: horaHoy, formaData: formaPago, entradasData:entradas}
 //fecha, hora, formaPago, entradasData
       try{
          const response = await  comprarEntrada({fecha: data.fechaData, hora:data.horaData, formaPago: data.formaData, entradasData: data.entradasData})
+         
          if (response){
            console.log("Compra válida, proceda al pago")
-           setResumen(response.resumen)
+           setResumen(response)
+           console.log(response)
          }
       }
      catch(error){
@@ -98,7 +100,9 @@ export default function ComprarEntradas() {
 
     prevKeysRef.current = items.map(it => ({ edad: it.edad, tipo: it.tipo }));
   }, [items]);
-
+  useEffect(()=>{
+    setEntradasData(items)
+  }, [items])
   useEffect(()=>{
     const validador = ()=>{
       if (entradasData != [] && fechaSeleccionada != '' && formaDePago != ''){
@@ -171,7 +175,7 @@ export default function ComprarEntradas() {
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
         </div>
-
+        <div>
         <div className="mt-2">
           {items.map((it, i) => (
             <ItemEntrada
@@ -183,6 +187,8 @@ export default function ComprarEntradas() {
             />
           ))
           }
+        </div>
+        <button>Confirmar Participantes</button>
         </div>
         <div className="flex-1">
           <label className="block text-hp-dark font-medium mb-1">
@@ -203,7 +209,7 @@ export default function ComprarEntradas() {
           <button
             title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
             disabled={(dataSeteada != true)}
-            onClick={handleEnvio}
+            onClick={()=>handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
             Confirmar Datos de Compra
