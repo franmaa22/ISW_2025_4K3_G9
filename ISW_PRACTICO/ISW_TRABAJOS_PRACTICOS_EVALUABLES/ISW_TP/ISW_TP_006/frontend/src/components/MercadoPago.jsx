@@ -33,7 +33,7 @@ export default function MercadoPagoMockModal({
       role="dialog"
     >
       
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/80" />
 
       
       <div className="relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl border border-hp-soft p-6">

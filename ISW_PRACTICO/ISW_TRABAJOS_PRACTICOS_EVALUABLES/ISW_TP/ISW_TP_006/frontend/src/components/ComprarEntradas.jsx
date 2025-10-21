@@ -2,6 +2,8 @@ import { use, useEffect, useMemo, useRef, useState } from 'react';
 import ItemEntrada from './ItemEntrada';
 import { calcularPrecioEntrada, comprarEntrada } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
+import CompraExitosaModal from './CompraConfirmada';
+
 export default function ComprarEntradas() {
   const [cantidad, setCantidad] = useState(1);
   const [items, setItems] = useState([
@@ -14,7 +16,12 @@ export default function ComprarEntradas() {
   const [resumen, setResumen] = useState({});
   const [open, setOpen] = useState(false)
   const [dataSeteada, setDataSeteada] = useState(false);
-  
+  const [bloqueo, setBloqueo] = useState(false)
+  const [pagoProcesado, setPagoProcesado] = useState(false)
+  const [dataSuccess, setDataSuccess] = useState(false)
+  const [finalizar, setFinalizar] = useState(false)
+
+
   const ahora= new Date()
   const año = ahora.getFullYear();
   const mes = String(ahora.getMonth() + 1).padStart(2, '0'); // Mes es 0-11
@@ -28,7 +35,11 @@ export default function ComprarEntradas() {
   
  
   const pagar = ()=>{
-    setOpen(true)
+    if(formaDePago == "tarjeta"){
+      setOpen(true)
+      return
+    }
+    setFinalizar(true) 
   }
   const handleCantidad = (n) => {
     const q = Math.max(1, Math.min(10, Number(n) || 1));
@@ -71,6 +82,8 @@ export default function ComprarEntradas() {
          if (response){
            console.log("Compra válida, proceda al pago")
            setResumen(response)
+           setBloqueo(true)
+           setDataSuccess(true)
            console.log(response)
          }
       }
@@ -80,9 +93,6 @@ export default function ComprarEntradas() {
 
     }
 
-  const redireccionMercadoPago = ()=>{
-   
-  }
 
 
   useEffect(() => {
@@ -162,7 +172,7 @@ export default function ComprarEntradas() {
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl border border-hp-soft">
         <div>
           <label htmlFor="">Seleccione la fecha de visita al parque</label>
-          <input className="block text-hp-dark font-medium mb-1" min={fechaHoyFormateada}  type="date"  onChange={(e)=> setFechaSeleccionada(e.target.value)} />
+          <input className="block text-hp-dark font-medium mb-1" disabled={bloqueo} min={fechaHoyFormateada}  type="date"  onChange={(e)=> setFechaSeleccionada(e.target.value)} />
         </div>
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">Cantidad de entradas</label>
@@ -171,31 +181,33 @@ export default function ComprarEntradas() {
             min={1}
             max={10}
             value={cantidad}
+            disabled={bloqueo}
             onChange={(e) => handleCantidad(e.target.value)}
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
         </div>
-        <div>
+        
         <div className="mt-2">
           {items.map((it, i) => (
             <ItemEntrada
               key={i}
               index={i}
               value={it}
+              disabled={bloqueo}
               onChange={handleItemChange}
               onRequestPrice={requestPrice}
             />
           ))
           }
         </div>
-        <button>Confirmar Participantes</button>
-        </div>
+    
         <div className="flex-1">
           <label className="block text-hp-dark font-medium mb-1">
             Seleccione la forma de pago
           </label>
           <select
             value={formaDePago}
+            disabled={bloqueo}
             onChange={(e) =>  setFormaDePago(e.target.value)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
@@ -208,7 +220,7 @@ export default function ComprarEntradas() {
       <div className="flex-1">
           <button
             title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
-            disabled={(dataSeteada != true)}
+            disabled={(dataSeteada != true) && (!bloqueo)}
             onClick={()=>handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
@@ -221,23 +233,31 @@ export default function ComprarEntradas() {
           <span className="text-hp-dark font-semibold">Total:</span>
           <span className="text-2xl font-bold text-hp-primary">${total}</span>
         </div>
-      {(formaDePago == "tarjeta") && (dataSeteada) && 
+      {(dataSuccess)  && (!pagoProcesado) &&
       <button
         onClick={pagar}
         className="bg-hp-primary text-hp-light px-4 py-2 rounded-xl"
       >
-        Procesar Pago con Mercado Pago
+        Continuar al Pago
       </button>  }
       
 
       <MercadoPagoMockModal
         isOpen={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {setOpen(false), setFinalizar(true)}}
         durationMs={2200}
         onSuccess={() => {
           console.log('Pago OK');
+          setPagoProcesado(true)
+          
         }}
       />
+      {(finalizar) &&
+      <CompraExitosaModal
+        isOpen={finalizar}
+        onClose={() => {setOpen(false), location.reload()}}
+        resumen={resumen}
+      />}
       </div>
       
     </div>

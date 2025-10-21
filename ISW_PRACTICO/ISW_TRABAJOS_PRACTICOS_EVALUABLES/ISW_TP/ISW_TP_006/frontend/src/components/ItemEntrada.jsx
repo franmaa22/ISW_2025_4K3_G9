@@ -1,4 +1,4 @@
-export default function ItemEntrada({ index, value, onChange}) {
+export default function ItemEntrada({ index, value, onChange, disabled}) {
   const {edad ='', tipo = '', precio = null, loading = false}= value ?? {};
   return (
     <div className="bg-white border border-hp-soft rounded-xl p-4 mb-4 shadow-sm w-full">
@@ -14,6 +14,7 @@ export default function ItemEntrada({ index, value, onChange}) {
             type="number"
             min={0}
             max={120}
+            disabled={disabled}
             value={edad}
             onChange={(e) => onChange(index, { edad: e.target.value })}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
@@ -27,6 +28,7 @@ export default function ItemEntrada({ index, value, onChange}) {
           </label>
           <select
             value={tipo}
+            disabled={disabled}
             onChange={(e) => onChange(index, { tipo: e.target.value })}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
