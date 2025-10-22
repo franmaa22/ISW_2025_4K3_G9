@@ -28,18 +28,25 @@ export default function MercadoPagoMockModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 9999 }}
       aria-modal="true"
       role="dialog"
     >
-      
-      <div className="absolute inset-0 bg-black/80" />
+      {/* Backdrop oscuro - CON ESTILO INLINE PARA GARANTIZAR OPACIDAD */}
+      <div 
+        className="absolute inset-0 bg-hp-light" 
+        onClick={(e) => {
+          if (canClose && e.target === e.currentTarget) {
+            onClose?.();
+          }
+        }}
+      />
 
-      
-      <div className="relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl border border-hp-soft p-6">
+      {/* Modal card */}
+      <div className="relative bg-white w-[90%] max-w-md rounded-2xl shadow-2xl border border-hp-soft p-6 z-10">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-hp-light flex items-center justify-center">
-            
             <span className="text-hp-primary font-bold">MP</span>
           </div>
           <h2 className="text-xl font-bold text-hp-primary">

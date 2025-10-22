@@ -1,4 +1,5 @@
 import { use, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom'; // AGREGADO
 import ItemEntrada from './ItemEntrada';
 import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
@@ -21,10 +22,6 @@ export default function ComprarEntradas() {
   const [dataSuccess, setDataSuccess] = useState(false)
   const [finalizar, setFinalizar] = useState(false)
 
- 
-
-
-  // Agrego
   const [fecha, setFecha] = useState('');
   const [fechaValida, setFechaValida] = useState(null);
   const [validandoFecha, setValidandoFecha] = useState(false);
@@ -32,7 +29,6 @@ export default function ComprarEntradas() {
   const debounceTimer = useRef(null);
 
   useEffect(() => {
-    
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
@@ -43,7 +39,6 @@ export default function ComprarEntradas() {
       return;
     }
 
-    // Validación local inmediata
     const fechaSeleccionada = new Date(fecha);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
@@ -54,13 +49,11 @@ export default function ComprarEntradas() {
       return;
     }
 
-    // Debounce para validación remota (espera 500ms)
     debounceTimer.current = setTimeout(async () => {
       setValidandoFecha(true);
       setErrorFecha('');
 
       try {
-        // Usar la función de API correcta
         const data = await validarFechaDisponible(fecha);
 
         if (data.disponible) {
@@ -78,7 +71,6 @@ export default function ComprarEntradas() {
       }
     }, 500);
 
-    // Cleanup
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
@@ -86,30 +78,26 @@ export default function ComprarEntradas() {
     };
   }, [fecha]);
 
-   // Validar si se puede proceder con la compra
   const puedeComprar = fechaValida && items.every(it => it.precio !== null);
 
-
-
-  const ahora= new Date()
+  const ahora = new Date()
   const año = ahora.getFullYear();
-  const mes = String(ahora.getMonth() + 1).padStart(2, '0'); // Mes es 0-11
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0');
   const dia = String(ahora.getDate()).padStart(2, '0');
-  const fechaHoyFormateada= `${año}-${mes}-${dia}`;
-  const hora  = String(ahora.getHours()).padStart(2, '0');
+  const fechaHoyFormateada = `${año}-${mes}-${dia}`;
+  const hora = String(ahora.getHours()).padStart(2, '0');
   const minutos = String(ahora.getMinutes()).padStart(2, '0');
   const segundos = String(ahora.getSeconds()).padStart(2, '0');
   const horaFormateada = `${hora}_${minutos}_${segundos}`;
-  const fechasBloqueadas = ['']
-  
- 
-  const pagar = ()=>{
-    if(formaDePago == "tarjeta"){
+
+  const pagar = () => {
+    if (formaDePago == "tarjeta") {
       setOpen(true)
       return
     }
-    setFinalizar(true) 
+    setFinalizar(true)
   }
+
   const handleCantidad = (n) => {
     const q = Math.max(1, Math.min(10, Number(n) || 1));
     setCantidad(q);
@@ -129,75 +117,12 @@ export default function ComprarEntradas() {
         ...patch,
         precio: ('edad' in patch || 'tipo' in patch) ? null : next[index].precio,
       };
-      
-      
       return next;
-
-
     });
   };
 
-
-
-
-  useEffect(() => {
-    items.forEach((it, i) => {
-      const prev = prevKeysRef.current[i];
-      const changed =
-        !prev ||
-        prev.edad !== it.edad ||
-        prev.tipo !== it.tipo;
-
-      if (changed && it && it.edad !== '' && it.tipo !== '' && !it.loading) {
-        requestPrice(i);
-      }
-    });
-
-    prevKeysRef.current = items.map(it => ({ edad: it.edad, tipo: it.tipo }));
-  }, [items]);
-  useEffect(()=>{
-    setEntradasData(items)
-  }, [items])
-  useEffect(()=>{
-    const validador = ()=>{
-      if (entradasData != [] && fechaSeleccionada != '' && formaDePago != ''){
-        setDataSeteada(true)
-        console.log(entradasData, fechaSeleccionada, formaDePago)
-      }
-    }
-    validador();
-  }, [entradasData, fechaSeleccionada, formaDePago])
- 
-
   const prevKeysRef = useRef([]);
 
-  //este para simular la compra y ver si sale bien el resumen => lo nutrimos despues con la funcionaldiad real
-
-
-
-  const handleEnvio = async (formaPago, entradas, total, fechaVisita, fechaHoy, horaHoy)=>{
-    console.log("Enviando: ", entradas)
-    const data = {fechaData: fechaHoy, horaData: horaHoy, formaData: formaPago, entradasData:entradas}
-//fecha, hora, formaPago, entradasData
-      try{
-         const response = await  comprarEntrada({fecha: data.fechaData, hora:data.horaData, formaPago: data.formaData, entradasData: data.entradasData})
-         
-         if (response){
-           console.log("Compra válida, proceda al pago")
-           setResumen(response)
-           setBloqueo(true)
-           setDataSuccess(true)
-           console.log(response)
-         }
-      }
-     catch(error){
-       console.error(error.message)
-     }
-
-    }
-
-
-
   useEffect(() => {
     items.forEach((it, i) => {
       const prev = prevKeysRef.current[i];
@@ -213,19 +138,40 @@ export default function ComprarEntradas() {
 
     prevKeysRef.current = items.map(it => ({ edad: it.edad, tipo: it.tipo }));
   }, [items]);
-  useEffect(()=>{
+
+  useEffect(() => {
     setEntradasData(items)
   }, [items])
-  useEffect(()=>{
-    const validador = ()=>{
-      if (entradasData != [] && fechaSeleccionada != '' && formaDePago != ''){
+
+  useEffect(() => {
+    const validador = () => {
+      if (entradasData != [] && fechaSeleccionada != '' && formaDePago != '') {
         setDataSeteada(true)
         console.log(entradasData, fechaSeleccionada, formaDePago)
       }
     }
     validador();
   }, [entradasData, fechaSeleccionada, formaDePago])
- 
+
+  const handleEnvio = async (formaPago, entradas, total, fechaVisita, fechaHoy, horaHoy) => {
+    console.log("Enviando: ", entradas)
+    const data = { fechaData: fechaHoy, horaData: horaHoy, formaData: formaPago, entradasData: entradas }
+    try {
+      const response = await comprarEntrada({ fecha: data.fechaData, hora: data.horaData, formaPago: data.formaData, entradasData: data.entradasData })
+
+      if (response) {
+        console.log("Compra válida, proceda al pago")
+        setResumen(response)
+        setBloqueo(true)
+        setDataSuccess(true)
+        console.log(response)
+      }
+    }
+    catch (error) {
+      console.error(error.message)
+    }
+  }
+
   const requestPrice = async (index) => {
     const it = items[index];
     if (!it || it.edad == "" || it.tipo == "") return;
@@ -239,7 +185,6 @@ export default function ComprarEntradas() {
     try {
       console.log(it.tipo)
       const resp = await calcularPrecioEntrada({
-        
         tipoEntrada: it.tipo,
         edad: Number(it.edad),
       });
@@ -286,7 +231,7 @@ export default function ComprarEntradas() {
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
         </div>
-         {/* SELECTOR DE FECHA */}
+
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">
             Fecha de visita *
@@ -298,22 +243,21 @@ export default function ComprarEntradas() {
             min={new Date().toISOString().split('T')[0]}
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
-          
-          {/* Estados de validación */}
+
           {validandoFecha && (
             <p className="text-sm text-blue-600 mt-2 flex items-center">
               <span className="animate-spin mr-2">⏳</span>
               Verificando disponibilidad...
             </p>
           )}
-          
+
           {fechaValida === true && !validandoFecha && (
             <p className="text-sm text-green-600 mt-2 flex items-center">
               <span className="mr-2">✅</span>
               Fecha disponible
             </p>
           )}
-          
+
           {errorFecha && (
             <p className="text-sm text-red-600 mt-2 flex items-center">
               <span className="mr-2">❌</span>
@@ -321,7 +265,7 @@ export default function ComprarEntradas() {
             </p>
           )}
         </div>
-        
+
         <div className="mt-2">
           {items.map((it, i) => (
             <ItemEntrada
@@ -334,9 +278,8 @@ export default function ComprarEntradas() {
             />
           ))
           }
-        
         </div>
-    
+
         <div className="flex-1">
           <label className="block text-hp-dark font-medium mb-1">
             Seleccione la forma de pago
@@ -344,7 +287,7 @@ export default function ComprarEntradas() {
           <select
             value={formaDePago}
             disabled={bloqueo}
-            onChange={(e) =>  setFormaDePago(e.target.value)}
+            onChange={(e) => setFormaDePago(e.target.value)}
             className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           >
             <option value="">Seleccionar...</option>
@@ -352,79 +295,57 @@ export default function ComprarEntradas() {
             <option value="tarjeta">Tarjeta</option>
           </select>
         </div>
+
         <div className="p-6">
-      <div className="flex-1">
-          <button
-            title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
-            disabled={(dataSeteada != true) && (!bloqueo)}
-            onClick={()=>handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
-            className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
-          >
-            Confirmar Datos de Compra
-          </button>
+          <div className="flex-1">
+            <button
+              title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
+              onClick={() => handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
+              className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
+            >
+              Confirmar Datos de Compra
+            </button>
+          </div>
+          <div className="p-6"></div>
         </div>
-        <div className="p-6"></div>
-    </div>
-    
- 
 
         <div className="flex items-center justify-between mt-4 border-t pt-4">
           <span className="text-hp-dark font-semibold">Total:</span>
           <span className="text-2xl font-bold text-hp-primary">${total}</span>
         </div>
-      {(dataSuccess)  && (!pagoProcesado) &&
-      <button
-        onClick={pagar}
-        className="bg-hp-primary text-hp-light px-4 py-2 rounded-xl"
-      >
-        Continuar al Pago
-      </button>  }
-      
 
-      <MercadoPagoMockModal
-        isOpen={open}
-        onClose={() => {setOpen(false), setFinalizar(true)}}
-        durationMs={2200}
-        onSuccess={() => {
-          console.log('Pago OK');
-          setPagoProcesado(true)
-          
-        }}
-      />
-      {(finalizar) &&
-      <CompraExitosaModal
-        isOpen={finalizar}
-        onClose={() => {setOpen(false), location.reload()}}
-        resumen={resumen}
-      />}
-      {(dataSuccess)  && (!pagoProcesado) &&
-      <button
-        onClick={pagar}
-        className="bg-hp-primary text-hp-light px-4 py-2 rounded-xl"
-      >
-        Continuar al Pago
-      </button>  }
-      
-
-      <MercadoPagoMockModal
-        isOpen={open}
-        onClose={() => {setOpen(false), setFinalizar(true)}}
-        durationMs={2200}
-        onSuccess={() => {
-          console.log('Pago OK');
-          setPagoProcesado(true)
-          
-        }}
-      />
-      {(finalizar) &&
-      <CompraExitosaModal
-        isOpen={finalizar}
-        onClose={() => {setOpen(false), location.reload()}}
-        resumen={resumen}
-      />}
+        {(dataSuccess) && (!pagoProcesado) &&
+          <button
+            onClick={pagar}
+            className="bg-hp-primary text-hp-light px-4 py-2 rounded-xl w-full mt-4"
+          >
+            Continuar al Pago
+          </button>
+        }
       </div>
-      
-      
+
+      {/* PORTALES - RENDERIZADO FUERA DEL FLUJO NORMAL */}
+      {createPortal(
+        <MercadoPagoMockModal
+          isOpen={open}
+          onClose={() => { setOpen(false), setFinalizar(true) }}
+          durationMs={2200}
+          onSuccess={() => {
+            console.log('Pago OK');
+            setPagoProcesado(true)
+          }}
+        />,
+        document.body
+      )}
+
+      {createPortal(
+        finalizar && <CompraExitosaModal
+          isOpen={finalizar}
+          onClose={() => { setOpen(false), location.reload() }}
+          resumen={resumen}
+        />,
+        document.body
+      )}
     </div>
   );
 }

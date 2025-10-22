@@ -22,7 +22,7 @@ export default function CompraExitosaModal({ isOpen, onClose, resumen }) {
       <div className="absolute inset-0 bg-black" />
 
   
-      <div className="relative bg-white w-[95%] max-w-2xl rounded-2xl shadow-2xl border border-hp-soft p-6">
+      <div className="relative bg-hp-light w-[95%] max-w-2xl rounded-2xl shadow-2xl border border-hp-soft p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-hp-light flex items-center justify-center">
