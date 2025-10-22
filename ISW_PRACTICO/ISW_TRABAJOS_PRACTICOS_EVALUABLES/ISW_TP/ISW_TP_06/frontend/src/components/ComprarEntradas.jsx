@@ -39,15 +39,9 @@ export default function ComprarEntradas() {
       return;
     }
 
-    const fechaSeleccionada = new Date(fecha);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    if (fechaSeleccionada < hoy) {
-      setFechaValida(false);
-      setErrorFecha('La fecha no puede ser anterior a hoy');
-      return;
-    }
 
     debounceTimer.current = setTimeout(async () => {
       setValidandoFecha(true);
@@ -240,7 +234,7 @@ export default function ComprarEntradas() {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            min={new Date().toISOString().split('T')[0]}
+            min={fechaHoyFormateada}
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
 
