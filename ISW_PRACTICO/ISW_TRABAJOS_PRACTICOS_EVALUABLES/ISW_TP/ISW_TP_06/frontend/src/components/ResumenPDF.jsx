@@ -19,6 +19,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     letterSpacing: 0.5
   },
+  numeroCompra: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: '#2ecc71',
+    marginTop: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1
+  },
   subtitle: {
     fontSize: 10,
     color: '#7f8c8d',
@@ -70,12 +78,28 @@ const styles = StyleSheet.create({
     borderRadius: 4
   },
   th: { 
-    flex: 1, 
     fontSize: 10,
     fontWeight: 700,
     color: '#fff',
     textTransform: 'uppercase',
-    letterSpacing: 0.3
+    letterSpacing: 0.3,
+    textAlign: 'center'
+  },
+  thTicket: {
+    width: '30%',
+    textAlign: 'left'
+  },
+  thTipo: {
+    width: '20%',
+    textAlign: 'center'
+  },
+  thEdad: {
+    width: '20%',
+    textAlign: 'center'
+  },
+  thPrecio: {
+    width: '30%',
+    textAlign: 'right'
   },
   tr: { 
     flexDirection: 'row', 
@@ -89,13 +113,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fffe'
   },
   td: { 
-    flex: 1,
-    fontSize: 11,
+    fontSize: 10,
     color: '#2c3e50'
   },
-  tdBold: {
+  tdTicket: {
+    width: '30%',
+    textAlign: 'left'
+  },
+  tdTipo: {
+    width: '20%',
+    textAlign: 'center',
     fontWeight: 700,
     color: '#1a472a'
+  },
+  tdEdad: {
+    width: '20%',
+    textAlign: 'center'
+  },
+  tdPrecio: {
+    width: '30%',
+    textAlign: 'right',
+    fontWeight: 700,
+    color: '#2ecc71'
   },
   totalSection: { 
     marginTop: 20,
@@ -141,23 +180,24 @@ export default function ResumenPDF({ resumen }) {
         <View style={styles.header}>
           <Text style={styles.h1}>Eco Harmony Park</Text>
           <Text style={styles.subtitle}>RESUMEN DE COMPRA</Text>
+          <Text style={styles.numeroCompra}>N° {resumen?.numeroCompra}</Text>
         </View>
 
         <View style={styles.infoGrid}>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}> Fecha</Text>
+            <Text style={styles.infoLabel}>Fecha</Text>
             <Text style={styles.infoValue}>{resumen?.fecha}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}> Hora</Text>
+            <Text style={styles.infoLabel}>Hora</Text>
             <Text style={styles.infoValue}>{fmtHora(resumen?.hora)}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}> Forma de pago</Text>
+            <Text style={styles.infoLabel}>Forma de pago</Text>
             <Text style={styles.infoValue}>{(resumen?.formaPago || '').toUpperCase()}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}> Entradas</Text>
+            <Text style={styles.infoLabel}>Entradas</Text>
             <Text style={styles.infoValue}>{resumen?.cantidadEntradas}</Text>
           </View>
         </View>
@@ -165,18 +205,18 @@ export default function ResumenPDF({ resumen }) {
         <Text style={styles.sectionTitle}>Detalle de entradas</Text>
         
         <View style={styles.tableHeader}>
-          <Text style={styles.th}>#</Text>
-          <Text style={styles.th}>Tipo</Text>
-          <Text style={styles.th}>Edad</Text>
-          <Text style={styles.th}>Precio</Text>
+          <Text style={[styles.th, styles.thTicket]}>#</Text>
+          <Text style={[styles.th, styles.thTipo]}>Tipo</Text>
+          <Text style={[styles.th, styles.thEdad]}>Edad</Text>
+          <Text style={[styles.th, styles.thPrecio]}>Precio</Text>
         </View>
 
         {tickets.map((t, i) => (
           <View key={t.numeroTicket} style={[styles.tr, i % 2 === 1 && styles.trAlt]}>
-            <Text style={styles.td}>{t.numeroTicket}</Text>
-            <Text style={[styles.td, styles.tdBold]}>{fmtTipo(t.tipo)}</Text>
-            <Text style={styles.td}>{t.edad} años</Text>
-            <Text style={[styles.td, styles.tdBold]}>{fmtMon(t.precio)}</Text>
+            <Text style={[styles.td, styles.tdTicket]}>{t.numeroTicket}</Text>
+            <Text style={[styles.td, styles.tdTipo]}>{fmtTipo(t.tipo)}</Text>
+            <Text style={[styles.td, styles.tdEdad]}>{t.edad} años</Text>
+            <Text style={[styles.td, styles.tdPrecio]}>{fmtMon(t.precio)}</Text>
           </View>
         ))}
 

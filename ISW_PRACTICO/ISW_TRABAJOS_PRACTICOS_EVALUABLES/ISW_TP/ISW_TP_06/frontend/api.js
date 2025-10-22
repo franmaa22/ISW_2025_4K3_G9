@@ -28,3 +28,14 @@ export function validarFechaDisponible(fecha) {
     body: { fecha }
   });
 }
+
+
+export function enviarEmailEntrada(resumen) {
+  return request('/api/enviar-entrada', {
+    method: 'POST',
+    body: { 
+      email: 'mateoghiano5@gmail.com',
+      resumen
+    }
+  });
+}

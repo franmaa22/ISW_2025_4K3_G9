@@ -1,7 +1,7 @@
 import { use, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom'; // AGREGADO
+import { createPortal } from 'react-dom'; 
 import ItemEntrada from './ItemEntrada';
-import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible } from '../../api';
+import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible, enviarEmailEntrada } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
 import CompraExitosaModal from './CompraConfirmada';
 
@@ -21,6 +21,7 @@ export default function ComprarEntradas() {
   const [pagoProcesado, setPagoProcesado] = useState(false)
   const [dataSuccess, setDataSuccess] = useState(false)
   const [finalizar, setFinalizar] = useState(false)
+  
 
   const [fecha, setFecha] = useState('');
   const [fechaValida, setFechaValida] = useState(null);
@@ -39,10 +40,22 @@ export default function ComprarEntradas() {
       return;
     }
 
+
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaSeleccionada = new Date(year, month - 1, day); 
+
     const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    const [hoyYear, hoyMonth, hoyDay] = [hoy.getFullYear(), hoy.getMonth() + 1, hoy.getDate()];
+    const fechaHoy = new Date(hoyYear, hoyMonth - 1, hoyDay);
 
+    if (fechaSeleccionada < fechaHoy) {
+      setFechaValida(false);
+      setErrorFecha('La fecha no puede ser anterior a hoy');
+      return;
+    }
 
+    setFechaValida(true);
+    setErrorFecha('');
     debounceTimer.current = setTimeout(async () => {
       setValidandoFecha(true);
       setErrorFecha('');
@@ -72,7 +85,6 @@ export default function ComprarEntradas() {
     };
   }, [fecha]);
 
-  const puedeComprar = fechaValida && items.every(it => it.precio !== null);
 
   const ahora = new Date()
   const año = ahora.getFullYear();
@@ -83,7 +95,6 @@ export default function ComprarEntradas() {
   const minutos = String(ahora.getMinutes()).padStart(2, '0');
   const segundos = String(ahora.getSeconds()).padStart(2, '0');
   const horaFormateada = `${hora}_${minutos}_${segundos}`;
-
   const pagar = () => {
     if (formaDePago == "tarjeta") {
       setOpen(true)
@@ -146,19 +157,36 @@ export default function ComprarEntradas() {
     }
     validador();
   }, [entradasData, fechaSeleccionada, formaDePago])
-
-  const handleEnvio = async (formaPago, entradas, total, fechaVisita, fechaHoy, horaHoy) => {
+  const handleEnvio = async (formaPago, entradas, fechaHoy, horaHoy) => {
     console.log("Enviando: ", entradas)
-    const data = { fechaData: fechaHoy, horaData: horaHoy, formaData: formaPago, entradasData: entradas }
+    const data = { 
+      fechaData: fechaHoy, 
+      horaData: horaHoy, 
+      formaData: formaPago, 
+      entradasData: entradas
+    }
     try {
-      const response = await comprarEntrada({ fecha: data.fechaData, hora: data.horaData, formaPago: data.formaData, entradasData: data.entradasData })
+      const response = await comprarEntrada({ 
+        fecha: data.fechaData, 
+        hora: data.horaData, 
+        formaPago: data.formaData, 
+        entradasData: data.entradasData,
+
+      })
 
       if (response) {
         console.log("Compra válida, proceda al pago")
         setResumen(response)
         setBloqueo(true)
         setDataSuccess(true)
-        console.log(response)
+        
+
+        try {
+          await enviarEmailEntrada(response);
+          console.log('✅ Email enviado');
+        } catch (emailError) {
+          console.error('⚠️ Error al enviar email:', emailError);
+        }
       }
     }
     catch (error) {
@@ -332,10 +360,10 @@ export default function ComprarEntradas() {
         document.body
       )}
 
-      {createPortal(
+   {createPortal(
         finalizar && <CompraExitosaModal
           isOpen={finalizar}
-          onClose={() => { setOpen(false), location.reload() }}
+          onClose={() => { setOpen(false); location.reload() }}
           resumen={resumen}
         />,
         document.body
