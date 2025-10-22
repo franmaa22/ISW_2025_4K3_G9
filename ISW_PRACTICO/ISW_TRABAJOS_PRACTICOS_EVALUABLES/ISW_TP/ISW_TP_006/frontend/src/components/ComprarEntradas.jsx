@@ -239,6 +239,7 @@ export default function ComprarEntradas() {
           <input
             type="date"
             value={fecha}
+            disabled={bloqueo}
             onChange={(e) => setFecha(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
@@ -301,7 +302,14 @@ export default function ComprarEntradas() {
             <button
               title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
               onClick={() => handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
-              className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
+                className={
+    `w-full rounded-lg px-3 py-2 font-semibold transition 
+     focus:outline-none focus:ring-2 
+     ${fechaValida 
+        ? 'bg-hp-primary text-hp-light hover:bg-hp-mint focus:ring-hp-primary border border-hp-mint' 
+        : 'bg-hp-soft text-hp-dark/50 border border-hp-soft cursor-not-allowed'}`
+  }
+              disabled={!fechaValida}
             >
               Confirmar Datos de Compra
             </button>

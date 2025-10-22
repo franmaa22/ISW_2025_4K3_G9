@@ -24,9 +24,9 @@ function esFechaDeParqueAbierto(ymd) {
   const d = date.getDate();      
   const m = date.getMonth();     
 
-  if (day === 1)   return { ok: false, codigo: 'PARQUE_CERRADO_LUNES',  detalle: descomponerFecha(ymd) };
-  if (d === 25 && m === 11) return { ok: false, codigo: 'FERIADO_NAVIDAD',     detalle: descomponerFecha(ymd) };
-  if (d === 1  && m === 0)  return { ok: false, codigo: 'FERIADO_ANIO_NUEVO',  detalle: descomponerFecha(ymd) };
+  if (day === 1)   return { ok: false, codigo: 'Parque cerrado los lunes',  detalle: descomponerFecha(ymd) };
+  if (d === 25 && m === 11) return { ok: false, codigo: 'Parque cerrado en navidad',     detalle: descomponerFecha(ymd) };
+  if (d === 1  && m === 0)  return { ok: false, codigo: 'Parque cerrado por año nuevo',  detalle: descomponerFecha(ymd) };
 
   return { ok: true, detalle: descomponerFecha(ymd) };
 }
