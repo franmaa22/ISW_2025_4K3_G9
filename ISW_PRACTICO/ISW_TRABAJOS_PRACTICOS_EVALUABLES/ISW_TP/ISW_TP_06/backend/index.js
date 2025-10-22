@@ -63,15 +63,6 @@ app.post('/api/parque/validar-fecha', (req, res) => {
       });
     }
 
-    // Validar que no sea fecha pasada
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    if (fechaSeleccionada < hoy) {
-      return res.status(200).json({
-        disponible: false,
-        mensaje: 'La fecha no puede ser anterior a hoy'
-      });
-    }
 
     // Usar la función del mock para validar disponibilidad del parque
     const resultadoValidacion = esFechaDeParqueAbierto(fecha);
