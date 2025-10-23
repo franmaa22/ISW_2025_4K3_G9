@@ -19,7 +19,7 @@ const gestor = new GestorCompra();
 app.post('/comprarEntradas', (req, res) => {
   try {
     const {fecha, hora, formaPago, entradasData} = req.body;
-    
+    console.log(req.body)
     const resumen = gestor.realizarCompra({
       fecha, hora, formaPago,
       entradasData

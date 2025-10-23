@@ -54,7 +54,6 @@ export default function ComprarEntradas() {
       return;
     }
 
-    setFechaValida(true);
     setErrorFecha('');
     debounceTimer.current = setTimeout(async () => {
       setValidandoFecha(true);
@@ -234,6 +233,27 @@ export default function ComprarEntradas() {
     () => items.reduce((acc, it) => acc + (Number(it.precio) || 0), 0),
     [items]
   );
+  const entradasCompletas = useMemo(() => {
+  // opcional: chequear que haya exactamente `cantidad` items
+  if (items.length !== cantidad) return false;
+
+  return items.every((it) => {
+    const edadOk = String(it.edad).trim() !== '' && !Number.isNaN(Number(it.edad));
+    const tipoOk = String(it.tipo).trim() !== '';
+    return edadOk && tipoOk;
+  });
+}, [items, cantidad]);
+
+  const puedeConfirmar = useMemo(() => {
+  return Boolean(
+    fecha &&               // hay fecha seleccionada
+    fechaValida === true &&// el backend dijo "disponible"
+    !errorFecha &&         // no hay error
+    formaDePago &&         // se eligió forma de pago
+    entradasCompletas &&   // todas las entradas completas
+    !validandoFecha        // no estamos esperando validación
+  );
+}, [fecha, fechaValida, errorFecha, formaDePago, entradasCompletas, validandoFecha]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-hp-light px-4 py-10">
@@ -262,6 +282,7 @@ export default function ComprarEntradas() {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
+            disabled={bloqueo}
             min={fechaHoyFormateada}
             className="w-full border border-hp-mint rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
           />
@@ -322,8 +343,14 @@ export default function ComprarEntradas() {
           <div className="flex-1">
             <button
               title={'Revise La información ingresada ya que se pregenerarán las entradas una vez confirmada la información. Este botón no se habilitará hasta completar todos los campos'}
-              onClick={() => handleEnvio(formaDePago, entradasData, total, fechaSeleccionada, fechaHoyFormateada, horaFormateada)}
-              className="w-full border border-hp-mint rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hp-primary"
+              onClick={() => handleEnvio(formaDePago, entradasData, fechaHoyFormateada, horaFormateada)}
+              disabled={!puedeConfirmar}
+              className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 transition-colors duration-200
+                ${
+                  !puedeConfirmar
+                    ? 'border-gray-300 bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : 'border-hp-mint bg-hp-mint/20 text-hp-dark hover:bg-hp-mint hover:text-white focus:ring-hp-primary'
+                }`}
             >
               Confirmar Datos de Compra
             </button>

@@ -11,6 +11,7 @@ export default function CompraExitosaModal({ isOpen, onClose, resumen }) {
     () => (resumen?.tickets || []).reduce((acc, t) => acc + Number(t.precio || 0), 0),
     [resumen]
   );
+  console.log(resumen)
 
   if (!isOpen) return null;
 
