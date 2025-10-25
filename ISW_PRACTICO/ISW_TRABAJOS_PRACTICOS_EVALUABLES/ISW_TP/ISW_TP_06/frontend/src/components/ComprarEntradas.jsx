@@ -1,9 +1,10 @@
-import { use, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom'; 
 import ItemEntrada from './ItemEntrada';
-import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible, enviarEmailEntrada } from '../../api';
+import { calcularPrecioEntrada, comprarEntrada, validarFechaDisponible } from '../../api';
 import MercadoPagoMockModal from './MercadoPago';
 import CompraExitosaModal from './CompraConfirmada';
+import EmailEnviado from './EmailEnviado';
 
 export default function ComprarEntradas() {
   const [cantidad, setCantidad] = useState(1);
@@ -15,13 +16,15 @@ export default function ComprarEntradas() {
   const [formaDePago, setFormaDePago] = useState('');
   const [fechaSeleccionada, setFechaSeleccionada] = useState('');
   const [resumen, setResumen] = useState({});
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [dataSeteada, setDataSeteada] = useState(false);
-  const [bloqueo, setBloqueo] = useState(false)
-  const [pagoProcesado, setPagoProcesado] = useState(false)
-  const [dataSuccess, setDataSuccess] = useState(false)
-  const [finalizar, setFinalizar] = useState(false)
+  const [bloqueo, setBloqueo] = useState(false);
+  const [pagoProcesado, setPagoProcesado] = useState(false);
+  const [dataSuccess, setDataSuccess] = useState(false);
+  const [finalizar, setFinalizar] = useState(false);
   
+  // Nuevos estados para el modal de email
+  const [mostrarModalEmail, setMostrarModalEmail] = useState(false);
 
   const [fecha, setFecha] = useState('');
   const [fechaValida, setFechaValida] = useState(null);
@@ -39,7 +42,6 @@ export default function ComprarEntradas() {
       setErrorFecha('');
       return;
     }
-
 
     const [year, month, day] = fecha.split('-').map(Number);
     const fechaSeleccionada = new Date(year, month - 1, day); 
@@ -84,8 +86,7 @@ export default function ComprarEntradas() {
     };
   }, [fecha]);
 
-
-  const ahora = new Date()
+  const ahora = new Date();
   const año = ahora.getFullYear();
   const mes = String(ahora.getMonth() + 1).padStart(2, '0');
   const dia = String(ahora.getDate()).padStart(2, '0');
@@ -94,13 +95,14 @@ export default function ComprarEntradas() {
   const minutos = String(ahora.getMinutes()).padStart(2, '0');
   const segundos = String(ahora.getSeconds()).padStart(2, '0');
   const horaFormateada = `${hora}_${minutos}_${segundos}`;
+
   const pagar = () => {
-    if (formaDePago == "tarjeta") {
-      setOpen(true)
-      return
+    if (formaDePago === "tarjeta") {
+      setOpen(true);
+      return;
     }
-    setFinalizar(true)
-  }
+    setFinalizar(true);
+  };
 
   const handleCantidad = (n) => {
     const q = Math.max(1, Math.min(10, Number(n) || 1));
@@ -144,58 +146,50 @@ export default function ComprarEntradas() {
   }, [items]);
 
   useEffect(() => {
-    setEntradasData(items)
-  }, [items])
+    setEntradasData(items);
+  }, [items]);
 
   useEffect(() => {
     const validador = () => {
-      if (entradasData != [] && fechaSeleccionada != '' && formaDePago != '') {
-        setDataSeteada(true)
-        console.log(entradasData, fechaSeleccionada, formaDePago)
+      if (entradasData != [] && fechaSeleccionada !== '' && formaDePago !== '') {
+        setDataSeteada(true);
+        console.log(entradasData, fechaSeleccionada, formaDePago);
       }
-    }
+    };
     validador();
-  }, [entradasData, fechaSeleccionada, formaDePago])
+  }, [entradasData, fechaSeleccionada, formaDePago]);
+
   const handleEnvio = async (formaPago, entradas, fechaHoy, horaHoy) => {
-    console.log("Enviando: ", entradas)
+    console.log("Enviando: ", entradas);
     const data = { 
       fechaData: fechaHoy, 
       horaData: horaHoy, 
       formaData: formaPago, 
       entradasData: entradas
-    }
+    };
+    
     try {
       const response = await comprarEntrada({ 
         fecha: data.fechaData, 
         hora: data.horaData, 
         formaPago: data.formaData, 
         entradasData: data.entradasData,
-
-      })
+      });
 
       if (response) {
-        console.log("Compra válida, proceda al pago")
-        setResumen(response)
-        setBloqueo(true)
-        setDataSuccess(true)
-        
-
-        try {
-          await enviarEmailEntrada(response);
-          console.log('✅ Email enviado');
-        } catch (emailError) {
-          console.error('⚠️ Error al enviar email:', emailError);
-        }
+        console.log("Compra válida, proceda al pago");
+        setResumen(response);
+        setBloqueo(true);
+        setDataSuccess(true);
       }
+    } catch (error) {
+      console.error(error.message);
     }
-    catch (error) {
-      console.error(error.message)
-    }
-  }
+  };
 
   const requestPrice = async (index) => {
     const it = items[index];
-    if (!it || it.edad == "" || it.tipo == "") return;
+    if (!it || it.edad === "" || it.tipo === "") return;
 
     setItems((prev) => {
       const next = [...prev];
@@ -204,7 +198,7 @@ export default function ComprarEntradas() {
     });
 
     try {
-      console.log(it.tipo)
+      console.log(it.tipo);
       const resp = await calcularPrecioEntrada({
         tipoEntrada: it.tipo,
         edad: Number(it.edad),
@@ -233,34 +227,41 @@ export default function ComprarEntradas() {
     () => items.reduce((acc, it) => acc + (Number(it.precio) || 0), 0),
     [items]
   );
-  const entradasCompletas = useMemo(() => {
-  // opcional: chequear que haya exactamente `cantidad` items
-  if (items.length !== cantidad) return false;
 
-  return items.every((it) => {
-    const edadOk = String(it.edad).trim() !== '' && !Number.isNaN(Number(it.edad));
-    const tipoOk = String(it.tipo).trim() !== '';
-    return edadOk && tipoOk;
-  });
-}, [items, cantidad]);
+  const entradasCompletas = useMemo(() => {
+    if (items.length !== cantidad) return false;
+
+    return items.every((it) => {
+      const edadOk = String(it.edad).trim() !== '' && !Number.isNaN(Number(it.edad));
+      const tipoOk = String(it.tipo).trim() !== '';
+      return edadOk && tipoOk;
+    });
+  }, [items, cantidad]);
 
   const puedeConfirmar = useMemo(() => {
-  return Boolean(
-    fecha &&               // hay fecha seleccionada
-    fechaValida === true &&// el backend dijo "disponible"
-    !errorFecha &&         // no hay error
-    formaDePago &&         // se eligió forma de pago
-    entradasCompletas &&   // todas las entradas completas
-    !validandoFecha        // no estamos esperando validación
-  );
-}, [fecha, fechaValida, errorFecha, formaDePago, entradasCompletas, validandoFecha]);
+    return Boolean(
+      fecha &&
+      fechaValida === true &&
+      !errorFecha &&
+      formaDePago &&
+      entradasCompletas &&
+      !validandoFecha
+    );
+  }, [fecha, fechaValida, errorFecha, formaDePago, entradasCompletas, validandoFecha]);
+
+  // Función para cerrar modal de compra y mostrar modal de email (SIMULADO)
+  const handleCerrarCompraExitosa = () => {
+    setFinalizar(false);
+    // Simular que siempre se envió el email exitosamente
+    console.log('📧 Simulando envío de email...');
+    setMostrarModalEmail(true);
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-hp-light px-4 py-10">
       <h1 className="text-4xl font-bold text-hp-primary mb-6 text-center">Eco Harmony Park 🌿</h1>
 
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl border border-hp-soft">
-
         <div className="mb-6">
           <label className="block text-hp-dark font-semibold mb-2">Cantidad de entradas</label>
           <input
@@ -319,8 +320,7 @@ export default function ComprarEntradas() {
               onChange={handleItemChange}
               onRequestPrice={requestPrice}
             />
-          ))
-          }
+          ))}
         </div>
 
         <div className="flex-1">
@@ -377,21 +377,30 @@ export default function ComprarEntradas() {
       {createPortal(
         <MercadoPagoMockModal
           isOpen={open}
-          onClose={() => { setOpen(false), setFinalizar(true) }}
+          onClose={() => { setOpen(false); setFinalizar(true); }}
           durationMs={2200}
           onSuccess={() => {
             console.log('Pago OK');
-            setPagoProcesado(true)
+            setPagoProcesado(true);
           }}
         />,
         document.body
       )}
 
-   {createPortal(
+      {createPortal(
         finalizar && <CompraExitosaModal
           isOpen={finalizar}
-          onClose={() => { setOpen(false); location.reload() }}
+          onClose={handleCerrarCompraExitosa}
           resumen={resumen}
+        />,
+        document.body
+      )}
+
+      {createPortal(
+        <EmailEnviado
+          isOpen={mostrarModalEmail}
+          onClose={() => location.reload()}
+          email={resumen?.email || "user@user.com"}
         />,
         document.body
       )}
